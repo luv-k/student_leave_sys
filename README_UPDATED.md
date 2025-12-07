@@ -61,9 +61,4 @@ Approved/rejected requests are kept in the DB for history; student portal only s
 - Run behind a production WSGI server (Gunicorn / Waitress) — do not use Flask's dev server in production.
 - For better deliverability and ease, consider using a transactional email provider (SendGrid, Mailgun) in production.
 
-## Contributing / Next steps
-
-- To add email testing, set `MAIL_SENDER` and `MAIL_PASSWORD` and use the app's flows; I can add a `send_test.py` helper on request.
-
----
-Small, focused README additions were created to clarify setup and environment variables. No functionality changes were made.
+- To add email testing, set `MAIL_SENDER` and `MAIL_PASSWORD` and use the app's flows
