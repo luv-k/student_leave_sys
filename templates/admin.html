@@ -41,6 +41,7 @@
                 <img src="/uploads/{{ l['photo'] }}" style="max-width:150px;">
                 {% endif %}
 
+                {% if l['status'] == 'Pending' %}
                 <form action="/admin/verify/{{ l['id'] }}/approve" method="get" class="d-inline-block mt-2">
                     <button class="btn btn-success btn-sm">Approve</button>
                 </form>
@@ -48,6 +49,7 @@
                 <form action="/admin/verify/{{ l['id'] }}/reject" method="get" class="d-inline-block mt-2 ms-2">
                     <button class="btn btn-danger btn-sm">Reject</button>
                 </form>
+                {% endif %}
 
             </div>
 

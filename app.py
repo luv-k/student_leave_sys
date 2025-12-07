@@ -31,7 +31,9 @@ def get_leaves_db():
 # INIT DBs
 
 def init_db():
+
     # Users DB
+
     conn = get_users_db()
     c = conn.cursor()
     c.execute("""
@@ -54,6 +56,7 @@ def init_db():
     conn.close()
 
     # Leaves DB
+    
     conn = get_leaves_db()
     c = conn.cursor()
     c.execute('''
@@ -168,8 +171,26 @@ def logout():
 @app.route("/student")
 @login_required(role="student")
 def student_page():
+    # Show only pending leaves for the logged-in student
+    user_email = None
+    if "user_id" in session:
+        uc = get_users_db()
+        cur = uc.cursor()
+        cur.execute("SELECT email FROM users WHERE id=?", (session["user_id"],))
+        urow = cur.fetchone()
+        if urow:
+            try:
+                user_email = urow["email"]
+            except Exception:
+                user_email = urow[0]
+        uc.close()
+
     conn = get_leaves_db()
-    leaves = conn.execute("SELECT * FROM leaves ORDER BY id DESC").fetchall()
+    if user_email:
+        leaves = conn.execute("SELECT * FROM leaves WHERE email=? AND status='Pending' ORDER BY id DESC", (user_email,)).fetchall()
+    else:
+        # fallback: no email found — show no leaves to the student
+        leaves = []
     conn.close()
     return render_template("student.html", leaves=leaves)
 
@@ -225,7 +246,8 @@ def submit():
 @login_required(role="admin")
 def admin_page():
     conn = get_leaves_db()
-    leaves = conn.execute("SELECT * FROM leaves ORDER BY id DESC").fetchall()
+    # Show pending requests first, then others (most recent first)
+    leaves = conn.execute("SELECT * FROM leaves ORDER BY CASE WHEN status='Pending' THEN 0 ELSE 1 END, id DESC").fetchall()
     conn.close()
     return render_template("admin.html", leaves=leaves)
 
@@ -258,7 +280,8 @@ def approve(leave_id):
     cur = conn.cursor()
     cur.execute("SELECT name,email,reason FROM leaves WHERE id=?", (leave_id,))
     row = cur.fetchone()
-    conn.execute("UPDATE leaves SET status='Approved' WHERE id=?",(leave_id,))
+    # update the leave status to Approved (keep history)
+    conn.execute("UPDATE leaves SET status='Approved' WHERE id=?", (leave_id,))
     conn.commit()
     conn.close()
 
@@ -312,7 +335,8 @@ def reject(leave_id):
     cur = conn.cursor()
     cur.execute("SELECT name,email,reason FROM leaves WHERE id=?", (leave_id,))
     row = cur.fetchone()
-    conn.execute("UPDATE leaves SET status='Rejected' WHERE id=?",(leave_id,))
+    # update the leave status to Rejected (keep history)
+    conn.execute("UPDATE leaves SET status='Rejected' WHERE id=?", (leave_id,))
     conn.commit()
     conn.close()
 
