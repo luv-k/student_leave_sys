@@ -20,3 +20,10 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 USERS_DATABASE = os.path.join(os.getcwd(), "users.db")   # login system
 LEAVES_DATABASE = os.path.join(os.getcwd(), "leaves.db") # student leave requests
 
+# -----------------------------
+# Mail settings (use environment vars in production)
+# -----------------------------
+MAIL_SENDER = os.environ.get("MAIL_SENDER", "")
+MAIL_SMTP_SERVER = os.environ.get("MAIL_SMTP_SERVER", "smtp.gmail.com")
+MAIL_SMTP_PORT = int(os.environ.get("MAIL_SMTP_PORT", "587"))
+
