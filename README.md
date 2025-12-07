@@ -64,7 +64,7 @@ student_leave_app/
 │   ├─ student.html
 │   ├─ admin.html
 │   └─ admin_password_confirm.html
-│─ static/                     # CSS/JS files (optional)
+│─ static/                     # CSS/JS files
 │─ requirements.txt            # Python dependencies
 ```
 
